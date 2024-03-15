@@ -1,72 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import ContactList from './ContactListPage';
 import AddContactPage from './AddContactPage';
+import ContactListPage from './ContactListPage';
 import EditContactPage from './EditContactPage';
-import ViewContactModal from './ViewContactModal';
 import DeleteContactModal from './DeleteContactModal';
+import ViewContactModal from './ViewContactModal';
 
 function AddressBook() {
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
     setContacts(storedContacts);
   }, []);
 
-  const addContact = (newContact) => {
+  const handleAddContact = (newContact) => {
     const updatedContacts = [...contacts, newContact];
-    setContacts(updatedContacts);
+    // setContacts(updatedContacts);
+    setContacts((prevContacts) => [...prevContacts, newContact]);
     localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    navigate('/');
   };
 
-  const editContact = (id) => {
-    const contactToEdit = contacts.find((contact) => contact.id === id);
-    setSelectedContact(contactToEdit);
-    navigate(`/edit/${id}`);
-  };
-
-  const updateContact = (updatedContact) => {
+  const handleEditContact = (updatedContact) => {
     const updatedContacts = contacts.map((contact) =>
       contact.id === updatedContact.id ? updatedContact : contact
     );
     setContacts(updatedContacts);
     localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    navigate('/');
+    setSelectedContact(null);
+    setEditModalOpen(false);
   };
 
-  const deleteContact = () => {
-    const updatedContacts = contacts.filter((contact) => contact.id !== selectedContact.id);
+  const handleDeleteContact = (idToDelete) => {
+    const updatedContacts = contacts.filter((contact) => contact.id !== idToDelete);
     setContacts(updatedContacts);
     localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    setSelectedContact(null);
     setDeleteModalOpen(false);
-    navigate('/');
-  };
-
-  const viewContact = (contact) => {
-    setSelectedContact(contact); 
-    setEditModalOpen(true); 
   };
 
   return (
     <div>
-      <h1>Address Book</h1>
-      <Link to="/add"><button>Add Contact</button></Link>
-      <ContactList contacts={contacts} onEdit={editContact} onView={viewContact} onDelete={setDeleteModalOpen} />
-      <ViewContactModal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)} contact={selectedContact} />
-      <DeleteContactModal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)} onDelete={deleteContact} contact={selectedContact} />
-      
-      <Routes>
-        <Route path="/add" element={<AddContactPage onAdd={addContact} />} />
-        <Route path="/edit/:id" element={<EditContactPage onUpdate={updateContact} />} />
-        <Route path="/view/:id" element={<ViewContactModal contact={selectedContact} />} />
-      </Routes>
+      <div className="center-container">
+        <h1>Address Book</h1>
+      </div>
+      <AddContactPage onAddContact={handleAddContact} />
+      <EditContactPage onSave={handleEditContact} />
+      <ContactListPage
+        contacts={contacts}
+        onViewDetails={(contact) => {
+          setSelectedContact(contact);
+          setDeleteModalOpen(false); 
+        }}
+        onDelete={(contactId) => {
+          setSelectedContact(contacts.find(contact => contact.id === contactId));
+          setDeleteModalOpen(true);
+        }}
+        onEdit={setEditModalOpen}
+      />
+        {/* {selectedContact && isEditModalOpen && (
+          <EditContactPage 
+            contact={selectedContact} 
+            onSave={handleEditContact} 
+            onClose={() => setEditModalOpen(false)} 
+          />
+        )} */}
+      <DeleteContactModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={handleDeleteContact}
+        contact={selectedContact}
+        onClosed={() => setSelectedContact(null)}
+      />
+        {selectedContact && contacts.find(contact => contact.id === selectedContact.id) && (
+          <ViewContactModal contact={selectedContact} onClose={() => setSelectedContact(null)} />
+        )}
     </div>
   );
 }

@@ -1,43 +1,46 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-function AddContactPage({ onAdd }) {
-  const [contact, setContact] = useState({ name: '', email: '', phone: '', address: '' });
-  const navigate = useNavigate();
+function AddContactPage({ onAddContact }) {
+  const [contactDetails, setContactDetails] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+  });
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setContact((prevContact) => ({
-      ...prevContact,
-      [name]: value
+    setContactDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!contact.name || !contact.email || !contact.phone || !contact.address) {
-      alert('Please fill in all fields.');
-      return;
-    }
-    const newContact = { ...contact, id: uuidv4() };
-    console.log(onAdd);
-    onAdd(newContact);
-    navigate('/');
+    console.log('Submitting form...');
+    console.log('Adding new contact'+ contactDetails);
+    onAddContact({ id: uuidv4(), ...contactDetails });
+    console.log('Calling onAddContact with:', { id: uuidv4(), ...contactDetails });
+    console.log(typeof onAddContact);
+    // setContactDetails({
+    //   name: '',
+    //   email: '',
+    //   phone: '',
+    //   address: '',
+    // });
   };
 
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       <h2>Add Contact</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="name" value={contact.name} onChange={handleChange} placeholder="Name" required />
-        <input type="email" name="email" value={contact.email} onChange={handleChange} placeholder="Email" required />
-        <input type="tel" name="phone" value={contact.phone} onChange={handleChange} placeholder="Phone" required />
-        <input type="text" name="address" value={contact.address} onChange={handleChange} placeholder="Address" required />
-        <button type="submit">Save</button>
-        <Link to="/"><button>Cancel</button></Link>
-      </form>
-    </div>
+      <input type="text" name="name" value={contactDetails.name} onChange={handleInputChange} placeholder="Name" required/>
+      <input type="email" name="email" value={contactDetails.email} onChange={handleInputChange} placeholder="Email" required/>
+      <input type="text" name="phone" value={contactDetails.phone} onChange={handleInputChange} placeholder="Phone" required/>
+      <input type="text" name="address" value={contactDetails.address} onChange={handleInputChange} placeholder="Address" required/>
+      <button type="submit">submit</button>
+    </form>
   );
 }
 

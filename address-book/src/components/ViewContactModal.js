@@ -1,23 +1,19 @@
+// ViewContactModal.js
 import React from 'react';
 
-function ViewContactModal({ isOpen, onClose, contact }) {
-  if (!isOpen || !contact) {
-    return null;
-  }
+function ViewContactModal({ contact, onClose }) {
+  if (!contact) return null;
+
   return (
-    <div>
-      <h2>Contact Details</h2>
-      {contact ? (
-        <div>
-          <p><strong>Name:</strong> {contact.name}</p>
-          <p><strong>Email:</strong> {contact.email}</p>
-          <p><strong>Phone:</strong> {contact.phone}</p>
-          <p><strong>Address:</strong> {contact.address}</p>
-        </div>
-      ) : (
-        <p>Contact not found.</p>
-      )}
-      <button onClick={onClose}>Close</button>
+    <div className="modal-backdrop">
+      <div className='contact-details'>
+        <h2>View Contact</h2>
+        <p>Name: {contact.name}</p>
+        <p>Email: {contact.email}</p>
+        <p>Phone: {contact.phone}</p>
+        <p>Address: {contact.address}</p>
+        <button className= 'close-btn' onClick={onClose}>Close</button>
+      </div>
     </div>
   );
 }
