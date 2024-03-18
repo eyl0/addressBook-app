@@ -29,13 +29,7 @@ function AddContactPage() {
     const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
     const updatedContacts = [...storedContacts, newContact];
     localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-
-    // const newContact = { id: Date.now(), ...contactDetails };
-    // const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    // const updatedContacts = [...storedContacts, newContact];
-    // localStorage.setItem('contacts', JSON.stringify(updatedContacts));
     alert('Contact Added Successfully!');
-    // Redirect back to contact list
     navigate('/');
   };
 

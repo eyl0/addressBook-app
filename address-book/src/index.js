@@ -4,8 +4,7 @@ import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import AddContactPage from './components/AddContactPage';
 import EditContactPage from './components/EditContactPage';
 import ContactListPage from './components/ContactListPage';
-// import DeleteContactModal from './components/DeleteContactModal';
-// import ViewContactDetails from './components/ViewContactDetails';
+import ViewContactDetails from './components/ViewContactDetails';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -15,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/" exact element={<ContactListPage/>} />
         <Route path="/add" element={<AddContactPage />} />
         <Route path="/edit/:id" element={<EditContactPage/>} />
-        {/* <Route path="/view/:id" element={<ViewContactDetails/>} /> */}
+        <Route path="/view/:id" element={<ViewContactDetails/>} />
       </Routes>
     </Router>
   </React.StrictMode>

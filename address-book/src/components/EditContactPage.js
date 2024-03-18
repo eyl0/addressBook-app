@@ -13,7 +13,6 @@ function EditContactPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch contact details by id and set the state
     const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
     const selectedContact = storedContacts.find((contact) => contact.id === parseInt(id));
     if (selectedContact) {
@@ -26,25 +25,18 @@ function EditContactPage() {
     setEditedContact(prevState => ({ ...prevState, [name]: value })); // Update editedContact state with the changed input value
   };
 
-  const handleClose = () => {
-    // Define the close function logic here
-    console.log('Closing edit modal');
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitting edited contact:', editedContact);
-     // Update the contact in the data source (e.g., localStorage)
     const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
     const updatedContacts = storedContacts.map(contact => {
       if (contact.id ===  parseInt(id)) {
-         return { ...contact, ...editedContact }; // Update the edited contact
+         return { ...contact, ...editedContact }; 
        }
        return contact;
     });
     console.log('Submitting updated contact:', updatedContacts);
     localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    handleClose();
     alert('Contact updated successfully!');
     navigate("/");
   };

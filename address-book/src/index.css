@@ -95,14 +95,13 @@ button {
 }
 
 .form-container {
-  width: 500px; /* Set the width to 80% of the available space */
+  width: 600px; /* Set the width to 80% of the available space */
   margin: 0 auto; /* Center the form horizontally */
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
 }
-
 
 .form-container h2 {
   margin-bottom: 20px;
@@ -181,4 +180,8 @@ button {
   align-items: center;
   width: 97%;
   padding: 20px 10px;
+}
+
+.search-field {
+  
 }
