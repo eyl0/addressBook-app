@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-function EditContactPage({ onSave, onClose }) {
-  const [editedContact, setEditedContact] = useState({}); // Initialize editedContact as an empty object
+function EditContactPage() {
+  const [editedContact, setEditedContact] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+  });
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch contact details by id and set the state
     const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    const selectedContact = storedContacts.find((editedContact) => editedContact.id === id);
+    const selectedContact = storedContacts.find((contact) => contact.id === parseInt(id));
     if (selectedContact) {
-      setEditedContact(editedContact);
+      setEditedContact(selectedContact);
     }
   }, [id]);
 
@@ -19,25 +26,55 @@ function EditContactPage({ onSave, onClose }) {
     setEditedContact(prevState => ({ ...prevState, [name]: value })); // Update editedContact state with the changed input value
   };
 
+  const handleClose = () => {
+    // Define the close function logic here
+    console.log('Closing edit modal');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitting edited contact:', editedContact);
-    onSave(editedContact); // Pass the updated contact data to the onSave function
-    onClose(); 
+     // Update the contact in the data source (e.g., localStorage)
+    const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
+    const updatedContacts = storedContacts.map(contact => {
+      if (contact.id ===  parseInt(id)) {
+         return { ...contact, ...editedContact }; // Update the edited contact
+       }
+       return contact;
+    });
+    console.log('Submitting updated contact:', updatedContacts);
+    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+    handleClose();
+    alert('Contact updated successfully!');
+    navigate("/");
   };
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        {/* <span className="close" onClick={onClose}>&times;</span> */}
+    <div className="page-container">
+      <div className="form-container">
         <h2>Edit Contact</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="text" name="name" value={editedContact.name || ''} onChange={handleChange} placeholder="Name" />
-          <input type="email" name="email" value={editedContact.email || ''} onChange={handleChange} placeholder="Email" />
-          <input type="tel" name="phone" value={editedContact.phone || ''} onChange={handleChange} placeholder="Phone" />
-          <input type="text" name="address" value={editedContact.address || ''} onChange={handleChange} placeholder="Address" />
-          <button type="submit">Save</button>
-        </form>
+          <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" value={editedContact.name || ''} onChange={handleChange}/>
+          </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" value={editedContact.email || ''} onChange={handleChange}/>
+          </div>
+          <div className="form-group">
+            <label>Phone:</label>
+            <input type="tel" name="phone" value={editedContact.phone || ''} onChange={handleChange}/>
+          </div>
+          <div className="form-group">
+            <label>Address:</label>
+            <input type="text" name="address" value={editedContact.address || ''} onChange={handleChange}/>
+          </div>
+          <div className= 'button-container'>
+            <button className="submit-button"type="submit">Save</button>
+            <Link to="/"><button className="cancel-button" >Cancel</button></Link>
+          </div>
+          </form>
       </div>
     </div>
   );

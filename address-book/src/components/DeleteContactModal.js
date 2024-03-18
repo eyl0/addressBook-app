@@ -1,25 +1,25 @@
-// DeleteContactModal.js
 import React from 'react';
 
-function DeleteContactModal({ isOpen, onClosed, onDelete, contact }) {
-  if (!isOpen || !contact) return null;
-
-  const handleDelete = () => {
-    onDelete(contact.id);
-    onClosed();
+function DeleteContactModal({ showDeleteModal, setShowDeleteModal, handleDelete, contact }) {
+  const handleClose = () => {
+    setShowDeleteModal(false);
   };
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999 }}>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#fff', padding: '20px', borderRadius: '5px' }}>
-        <h2>Delete Contact</h2>
-        <p>Are you sure you want to delete {contact.name}?</p>
-        <div style={{ textAlign: 'center' }}>
-          <button style={{ marginRight: '10px' }} onClick={handleDelete}>Delete</button>
-          <button onClick={onClosed}>Cancel</button>
+    showDeleteModal && (
+      <div className='modal-overlay'>
+      <div className='modal-content'>
+          <h2>Delete Contact</h2>
+          {contact && contact.id && (
+            <p>Are you sure you want to delete this contact '{contact.name}'?</p>
+          )}
+          <div className= 'button-container'>
+            <button className="submit-button" onClick={handleDelete}>Yes</button>
+            <button className="cancel-button" onClick={handleClose}>No</button>
+          </div>
         </div>
       </div>
-    </div>
+    )
   );
 }
 

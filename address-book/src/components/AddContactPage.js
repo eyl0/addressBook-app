@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { Link, useNavigate } from 'react-router-dom';
 
-function AddContactPage({ onAddContact }) {
-  const [contactDetails, setContactDetails] = useState({
+function AddContactPage() {
+  const [contactDetails, setContactDetails] = useState(
+    {
     name: '',
     email: '',
     phone: '',
     address: '',
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,28 +21,52 @@ function AddContactPage({ onAddContact }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitting form...');
-    console.log('Adding new contact'+ contactDetails);
-    onAddContact({ id: uuidv4(), ...contactDetails });
-    console.log('Calling onAddContact with:', { id: uuidv4(), ...contactDetails });
-    console.log(typeof onAddContact);
-    // setContactDetails({
-    //   name: '',
-    //   email: '',
-    //   phone: '',
-    //   address: '',
-    // });
+    if (!contactDetails.name || !contactDetails.email || !contactDetails.phone || !contactDetails.address) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    const newContact = { id:  Date.now(), ...contactDetails };
+    const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
+    const updatedContacts = [...storedContacts, newContact];
+    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+
+    // const newContact = { id: Date.now(), ...contactDetails };
+    // const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
+    // const updatedContacts = [...storedContacts, newContact];
+    // localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+    alert('Contact Added Successfully!');
+    // Redirect back to contact list
+    navigate('/');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add Contact</h2>
-      <input type="text" name="name" value={contactDetails.name} onChange={handleInputChange} placeholder="Name" required/>
-      <input type="email" name="email" value={contactDetails.email} onChange={handleInputChange} placeholder="Email" required/>
-      <input type="text" name="phone" value={contactDetails.phone} onChange={handleInputChange} placeholder="Phone" required/>
-      <input type="text" name="address" value={contactDetails.address} onChange={handleInputChange} placeholder="Address" required/>
-      <button type="submit">submit</button>
-    </form>
+    <div className="page-container">
+      <div className="form-container">
+        <h2>Add Contact</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" value={contactDetails.name} onChange={handleInputChange} />
+          </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" value={contactDetails.email} onChange={handleInputChange} />
+          </div>
+          <div className="form-group">
+            <label>Phone:</label>
+            <input type="text" name="phone" value={contactDetails.phone} onChange={handleInputChange} />
+          </div>
+          <div className="form-group">
+            <label>Address:</label>
+            <input type="text" name="address" value={contactDetails.address} onChange={handleInputChange} />
+          </div>
+          <div className= 'button-container'>
+          <button className="submit-button" type="submit">Submit</button>
+          <Link to="/"><button className="cancel-button" >Cancel</button></Link>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
