@@ -1,9 +1,9 @@
+// components/AddContactPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function AddContactPage() {
-  const [contactDetails, setContactDetails] = useState(
-    {
+  const [contactDetails, setContactDetails] = useState({
     name: '',
     email: '',
     phone: '',
@@ -19,18 +19,26 @@ function AddContactPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!contactDetails.name || !contactDetails.email || !contactDetails.phone || !contactDetails.address) {
-      alert('Please fill in all fields.');
-      return;
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactDetails),
+      });
+      if (response.ok) {
+        alert('Contact Added Successfully!');
+        navigate('/');
+      } else {
+        alert('Failed to add contact!');
+      }
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      alert('Failed to add contact!');
     }
-    const newContact = { id:  Date.now(), ...contactDetails };
-    const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    const updatedContacts = [...storedContacts, newContact];
-    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    alert('Contact Added Successfully!');
-    navigate('/');
   };
 
   return (
@@ -54,9 +62,9 @@ function AddContactPage() {
             <label>Address:</label>
             <input type="text" name="address" value={contactDetails.address} onChange={handleInputChange} />
           </div>
-          <div className= 'button-container'>
-          <button className="submit-button" type="submit">Submit</button>
-          <Link to="/"><button className="cancel-button" >Cancel</button></Link>
+          <div className="button-container">
+            <button className="submit-button" type="submit">Submit</button>
+            <Link to="/"><button className="cancel-button">Cancel</button></Link>
           </div>
         </form>
       </div>

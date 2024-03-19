@@ -1,39 +1,53 @@
+// components/ContactListPage.js
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DeleteContactModal from './DeleteContactModal';
 
 function ContactListPage() {
   const [contacts, setContacts] = useState([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedContactId, setSelectedContactId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState();
+  const [selectedContactId, setSelectedContactId] = useState();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    setContacts(storedContacts);
+    const fetchContacts = async () => {
+      try {
+        const response = await fetch('/api/contacts');
+        if (response.ok) {
+          const data = await response.json();
+          console.log("This is my data" + data)
+          setContacts(data.contacts);
+        } else {
+          console.error('Failed to fetch contacts');
+        }
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+      }
+    };
+
+    fetchContacts();
   }, []);
-
-  const onSearch = (query) => { 
-    console.log(query);
-    setSearchQuery(query); // updates the searchQuery state with the new query value.
-  };
-
-  // Filtering existing contacts array based on search query
-  // The filter method iterates through each contact in the array.
-  // If it does, the contact is included in the filteredContacts array
-
-  const filteredContacts = contacts.filter(contact =>
-    Object.values(contact).some(field =>
-      typeof field === 'string' && field.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
-
-  const handleDelete = () => {
-    const updatedContacts = contacts.filter(contact => contact.id !== selectedContactId);
-    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    setContacts(updatedContacts);
-    alert('Successfully deleted!');
-    setShowDeleteModal(false);
+  
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        // Remove the deleted contact from the contacts array
+        setContacts(contacts.filter(contact => contact.id !== id));
+        alert('Contact Added Successfully!');
+        console.log('Contact deleted successfully');
+        setShowDeleteModal(false);
+        navigate('/');
+      } else {
+        console.error('Failed to delete contact');
+      }
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+    }
   };
 
   const handleShowModal = (id) => {
@@ -41,21 +55,28 @@ function ContactListPage() {
     setShowDeleteModal(true);
   };
 
+  const onSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredContacts = Array.isArray(contacts) ? contacts.filter(contact =>
+    Object.values(contact).some(field =>
+      typeof field === 'string' && field.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  ) : [];
+
   return (
     <div className="center-container">
       <div className="table-container">
         <h1>Address Book Web App</h1>
         <div className="header-button">
-          {/* <h2>Contact List</h2> */}
-          <div className="form-group">
           <input
-              type="text"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => onSearch(e.target.value)} // Update search query state
-              className="search-field"
-            />
-          </div>
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => onSearch(e.target.value)}
+            className="search-field"
+          />
           <Link to="/add"><button className="create-btn"> + Add Contact</button></Link>
         </div>
         {filteredContacts.length === 0 ? (
@@ -81,15 +102,9 @@ function ContactListPage() {
                   <td>{contact.phone}</td>
                   <td>{contact.address}</td>
                   <td>
-                  <div className= 'group-button'>
-                    <Link to={`/edit/${contact.id}`}>
-                      <button className="edit-btn">Edit</button>
-                    </Link>
+                    <Link to={`/edit/${contact.id}`}><button className="edit-btn">Edit</button></Link>
                     <button className="delete-btn" onClick={() => handleShowModal(contact.id)}>Delete</button>
-                    <Link to={`/view/${contact.id}`}>
-                      <button className="view-btn" >View</button>
-                    </Link>
-                    </div>
+                    <Link to={`/view/${contact.id}`}><button className="view-btn">View</button></Link>
                   </td>
                 </tr>
               ))}
@@ -97,7 +112,13 @@ function ContactListPage() {
           </table>
         )}
       </div>
-      <DeleteContactModal showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} handleDelete={handleDelete} contactId={selectedContactId}  contact={contacts.find(contact => contact.id === selectedContactId)}/>
+      <DeleteContactModal 
+        showDeleteModal={showDeleteModal} 
+        setShowDeleteModal={setShowDeleteModal} 
+        handleDelete={handleDelete} 
+        contactId={selectedContactId} 
+        contact={contacts.find(contact => contact.id === selectedContactId)}
+      />
     </div>
   );
 }

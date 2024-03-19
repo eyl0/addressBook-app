@@ -14,7 +14,7 @@ function DeleteContactModal({ showDeleteModal, setShowDeleteModal, handleDelete,
             <p>Are you sure you want to delete this contact '{contact.name}'?</p>
           )}
           <div className= 'button-container'>
-            <button className="submit-button" onClick={handleDelete}>Yes</button>
+            <button className="submit-button" onClick={() => handleDelete(contact.id)}>Yes</button>
             <button className="cancel-button" onClick={handleClose}>No</button>
           </div>
         </div>

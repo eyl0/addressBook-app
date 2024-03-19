@@ -19,6 +19,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "miragejs": "^0.1.48",
     "react-scripts": "^5.0.1"
   },
   "browserslist": {

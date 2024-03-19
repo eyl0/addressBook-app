@@ -1,19 +1,30 @@
-// ViewContactDetails.js
+// components/ViewContactDetails.js
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 function ViewContactDetails() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [contact, setContact] = useState(null);
 
   useEffect(() => {
-    const storedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    const selectedContact = storedContacts.find(contact => contact.id === parseInt(id));
-    if (selectedContact) {
-      setContact(selectedContact);
-    }
-  }, [id]);
+    const fetchContact = async () => {
+      try {
+        const response = await fetch(`/api/contacts/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("This is view details" + data);
+          setContact(data.contact);
+        } else {
+          console.error('Failed to fetch contact');
+        }
+      } catch (error) {
+        console.error('Error fetching contact:', error);
+      }
+    };
 
+    fetchContact();
+  }, [id]);
+  console.log('This is view details', contact);
   return (
     <div className="center-container">
       <div className="table-container">
@@ -28,10 +39,8 @@ function ViewContactDetails() {
         ) : (
           <p>Contact not found</p>
         )}
-        <div className= 'button-container'>
-          <Link to="/" className="cancel-link">
-            <button className="cancel-button">Close</button>
-          </Link>
+        <div className="button-container">
+          <Link to="/"><button className="cancel-button">Close</button></Link>
         </div>
       </div>
     </div>
