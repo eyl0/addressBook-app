@@ -1,25 +1,42 @@
-import React from 'react';
+import React from "react";
+import ViewContactDetails from "./ViewContactDetails";
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
-function DeleteContactModal({ showDeleteModal, setShowDeleteModal, handleDelete, contact }) {
-  const handleClose = () => {
-    setShowDeleteModal(false);
+function DeleteContactModal() {
+  const { id } = useParams();
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setIsDeleted(true);
+      } else {
+        console.error('Error deleting contact');
+      }
+    } catch (error) {
+      console.error('Error deleting contact', error);
+    }
   };
 
   return (
-    showDeleteModal && (
-      <div className='modal-overlay'>
-      <div className='modal-content'>
-          <h2>Delete Contact</h2>
-          {contact && contact.id && (
-            <p>Are you sure you want to delete this contact '{contact.name}'?</p>
-          )}
-          <div className= 'button-container'>
-            <button className="submit-button" onClick={() => handleDelete(contact.id)}>Yes</button>
-            <button className="cancel-button" onClick={handleClose}>No</button>
-          </div>
+    <div className="page-container">
+      {isDeleted ? (
+        <div className="form-container">
+        <p>Contact deleted successfully!</p>
+        <Link to="/"><button className="cancel-button">Close</button></Link>
         </div>
-      </div>
-    )
+      ) : (
+        <>
+          <ViewContactDetails  isDeleted={true}/> 
+        </>
+      )}
+    </div>
   );
 }
 

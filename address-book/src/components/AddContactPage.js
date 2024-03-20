@@ -1,6 +1,6 @@
 // components/AddContactPage.js
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function AddContactPage() {
   const [contactDetails, setContactDetails] = useState({
@@ -9,7 +9,7 @@ function AddContactPage() {
     phone: '',
     address: '',
   });
-  const navigate = useNavigate();
+  const [isAdded, setAdded] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,8 +30,7 @@ function AddContactPage() {
         body: JSON.stringify(contactDetails),
       });
       if (response.ok) {
-        alert('Contact Added Successfully!');
-        navigate('/');
+        setAdded(true);
       } else {
         alert('Failed to add contact!');
       }
@@ -43,7 +42,14 @@ function AddContactPage() {
 
   return (
     <div className="page-container">
+      {isAdded ? (
+        <div className="form-container">
+        <p>Contact added successfully!</p>
+        <Link to="/"><button className="cancel-button">Close</button></Link>
+        </div>
+      ) : (
       <div className="form-container">
+      <div>
         <h2>Add Contact</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -64,10 +70,12 @@ function AddContactPage() {
           </div>
           <div className="button-container">
             <button className="submit-button" type="submit">Submit</button>
-            <Link to="/"><button className="cancel-button">Cancel</button></Link>
+            <Link to="/"><button className="cancel-button">Close</button></Link>
           </div>
         </form>
       </div>
+      </div>
+      )}
     </div>
   );
 }

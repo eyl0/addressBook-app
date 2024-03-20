@@ -8,10 +8,10 @@ export function makeServer({ environment = 'development' } = {}) {
       contact: Model,
     },
 
-    seeds(server) {
-      server.create('contact', { name: 'John ', email: 'john@example.com', phone: '0984298764', address: 'Paranaque City' });
-      server.create('contact', { name: 'Jane ', email: 'jane@example.com', phone: '0987654321', address: 'Muntinlupa City' });
-    },
+    // seeds(server) {
+    //   server.create('contact', { name: 'John ', email: 'john@example.com', phone: '0984298764', address: 'Paranaque City' });
+    //   server.create('contact', { name: 'Jane ', email: 'jane@example.com', phone: '0987654321', address: 'Muntinlupa City' });
+    // },
 
     routes() {
       this.namespace = 'api';

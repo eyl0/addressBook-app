@@ -1,15 +1,10 @@
 // components/ContactListPage.js
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import DeleteContactModal from './DeleteContactModal';
+import { Link } from 'react-router-dom';
 
 function ContactListPage() {
   const [contacts, setContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState();
-  const [selectedContactId, setSelectedContactId] = useState();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -30,31 +25,6 @@ function ContactListPage() {
     fetchContacts();
   }, []);
   
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`/api/contacts/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        // Remove the deleted contact from the contacts array
-        setContacts(contacts.filter(contact => contact.id !== id));
-        alert('Contact Added Successfully!');
-        console.log('Contact deleted successfully');
-        setShowDeleteModal(false);
-        navigate('/');
-      } else {
-        console.error('Failed to delete contact');
-      }
-    } catch (error) {
-      console.error('Error deleting contact:', error);
-    }
-  };
-
-  const handleShowModal = (id) => {
-    setSelectedContactId(id);
-    setShowDeleteModal(true);
-  };
-
   const onSearch = (query) => {
     setSearchQuery(query);
   };
@@ -103,7 +73,7 @@ function ContactListPage() {
                   <td>{contact.address}</td>
                   <td>
                     <Link to={`/edit/${contact.id}`}><button className="edit-btn">Edit</button></Link>
-                    <button className="delete-btn" onClick={() => handleShowModal(contact.id)}>Delete</button>
+                    <Link to={`/delete/${contact.id}`}><button className="delete-btn">Delete</button></Link>
                     <Link to={`/view/${contact.id}`}><button className="view-btn">View</button></Link>
                   </td>
                 </tr>
@@ -112,13 +82,6 @@ function ContactListPage() {
           </table>
         )}
       </div>
-      <DeleteContactModal 
-        showDeleteModal={showDeleteModal} 
-        setShowDeleteModal={setShowDeleteModal} 
-        handleDelete={handleDelete} 
-        contactId={selectedContactId} 
-        contact={contacts.find(contact => contact.id === selectedContactId)}
-      />
     </div>
   );
 }

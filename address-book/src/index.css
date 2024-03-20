@@ -144,7 +144,7 @@ button {
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
-  text-align: center;
+  text-align: left;
 }
 /* Button Container */
 .button-container {
@@ -164,7 +164,7 @@ button {
 }
 .cancel-button {
   margin: 0 10px;
-  background-color: red;
+  background-color: gray;
   border: none;
 }
 

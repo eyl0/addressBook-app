@@ -10,6 +10,7 @@ function EditContactPage() {
     address: '',
   });
   const { id } = useParams();
+  const [isAdded, setAdded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +19,6 @@ function EditContactPage() {
         const response = await fetch(`/api/contacts/${id}`);
         if (response.ok) {
           const data = await response.json();
-          console.log("This is edit contact" + data);
           setEditedContact(data.contact);
         } else {
           console.error('Failed to fetch contact');
@@ -47,8 +47,7 @@ function EditContactPage() {
         body: JSON.stringify(editedContact),
       });
       if (response.ok) {
-        alert('Contact updated successfully!');
-        navigate('/');
+        setAdded(true);
       } else {
         alert('Failed to update contact!');
       }
@@ -60,7 +59,13 @@ function EditContactPage() {
 
   return (
     <div className="page-container">
-      <div className="form-container">
+      {isAdded ? ( 
+        <div className="form-container">
+        <p>Contact Updated Successfully!</p>
+        <Link to="/"><button className="cancel-button">Close</button></Link>
+        </div>        
+      ) : (
+        <div className="form-container">
         <h2>Edit Contact</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -81,10 +86,11 @@ function EditContactPage() {
           </div>
           <div className="button-container">
             <button className="submit-button" type="submit">Save</button>
-            <Link to="/"><button className="cancel-button">Cancel</button></Link>
+            <Link to="/"><button className="cancel-button">Close</button></Link>
           </div>
         </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
